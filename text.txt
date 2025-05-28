@@ -1,0 +1,29 @@
+def NFDH(rectangles, W, H):
+    rectangles = sorted(rectangles, key=lambda r: r[1], reverse=True)
+    placements = []
+    current_shelf_y = 0
+    current_shelf_height = 0
+    current_x = 0
+
+    for i, (w, h) in enumerate(rectangles):
+        if w > W or h > H:
+            continue
+
+        if current_x + w > W:
+            current_shelf_y += current_shelf_height
+            if current_shelf_y + h > H:
+                continue
+            current_x = 0
+            current_shelf_height = h
+
+        placements.append({
+            "id": i + 1,
+            "position": (current_x, current_shelf_y),
+            "dimension": (w, h)
+        })
+        current_x += w
+        current_shelf_height = max(current_shelf_height, h)
+
+    return placements
+
+maitenant cree des methodes comme celui là pour Best-Fit et First-Fit Decreasing Height
