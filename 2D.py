@@ -1,4 +1,5 @@
 import tkinter as tk
+import copy
 
 def NFDH(rectangles, W, H):
     rectangles = sorted(rectangles, key=lambda r: r[1], reverse=True)
@@ -97,13 +98,56 @@ def BFDH(rectangles, W, H):
 
     return placements
 
+def brute_force_packing_2d(rectangles, W, H):
+    meilleur = {"placements": None, "shelves": None, "nb_shelves": float("inf")}
 
-def dessiner_interface(W, H, placements, scale=40, padding=10):
+    def placer(index, placements, shelves):
+        if index == len(rectangles):
+            if len(shelves) < meilleur["nb_shelves"]:
+                meilleur["nb_shelves"] = len(shelves)
+                meilleur["placements"] = copy.deepcopy(placements)
+                meilleur["shelves"] = copy.deepcopy(shelves)
+            return
+
+        w, h = rectangles[index]
+
+        # Essayer de placer le rectangle sur chaque étagère existante
+        for i in range(len(shelves)):
+            y_start, shelf_height, used_width = shelves[i]
+            if h <= shelf_height and used_width + w <= W:
+                # Créer nouvelle configuration
+                new_placements = copy.deepcopy(placements)
+                new_shelves = copy.deepcopy(shelves)
+                new_shelves[i][2] += w  # ajouter largeur utilisée
+                new_placements.append({
+                    "id": index + 1,
+                    "position": (used_width, y_start),
+                    "dimension": (w, h)
+                })
+                placer(index + 1, new_placements, new_shelves)
+
+        # Essayer de créer une nouvelle étagère
+        current_y = sum(s[1] for s in shelves)
+        if current_y + h <= H:
+            new_placements = copy.deepcopy(placements)
+            new_shelves = copy.deepcopy(shelves)
+            new_shelves.append([current_y, h, w])
+            new_placements.append({
+                "id": index + 1,
+                "position": (0, current_y),
+                "dimension": (w, h)
+            })
+            placer(index + 1, new_placements, new_shelves)
+
+    placer(0, [], [])
+    return meilleur["placements"]
+
+def dessiner_interface(W, H, placements, scale_x=40, scale_y=15, padding=10):
     fenetre = tk.Tk()
     fenetre.title("Placement NFDH - Grille 2D")
 
-    canvas_width = W * scale + padding * 2
-    canvas_height = H * scale + padding * 2
+    canvas_width = W * scale_x + padding * 2
+    canvas_height = H * scale_y + padding * 2
 
     canvas = tk.Canvas(fenetre, width=canvas_width, height=canvas_height, bg="white")
     canvas.pack(pady=10)
@@ -111,7 +155,7 @@ def dessiner_interface(W, H, placements, scale=40, padding=10):
     # Grand rectangle avec bordure
     canvas.create_rectangle(
         padding, padding, 
-        W * scale + padding, H * scale + padding,
+        W * scale_x + padding, H * scale_y + padding,
         outline="black", width=2
     )
 
@@ -120,10 +164,10 @@ def dessiner_interface(W, H, placements, scale=40, padding=10):
         w, h = rect["dimension"]
         rect_id = rect["id"]
 
-        x1 = padding + x * scale
-        y1 = padding + y * scale
-        x2 = padding + (x + w) * scale
-        y2 = padding + (y + h) * scale
+        x1 = padding + x * scale_x
+        y1 = padding + y * scale_y
+        x2 = padding + (x + w) * scale_x
+        y2 = padding + (y + h) * scale_y
 
         canvas.create_rectangle(x1, y1, x2, y2, fill="skyblue", outline="black")
         canvas.create_text((x1 + x2) // 2, (y1 + y2) // 2, text=str(rect_id), font=("Arial", 14, "bold"))
@@ -143,11 +187,11 @@ def dessiner_interface(W, H, placements, scale=40, padding=10):
 
 # Exemple d’utilisation
 if __name__ == "__main__":
-    W, H = 10, 10
-    rectangles = [(6,4),(2,3),(4,1),(5,3),(3,1)]
-    placements = NFDH(rectangles, W, H)
+    W, H = 10, 30
+    rectangles = [(9,9),(8,8),(7,7),(1,6),(1,5),(2,4),(8,3),(2,2),(2,1)]
+    placements = brute_force_packing_2d(rectangles, W, H)
     dessiner_interface(W, H, placements)
-    placements = FFDH(rectangles, W, H)
-    dessiner_interface(W, H, placements)
-    placements = BFDH(rectangles, W, H)
-    dessiner_interface(W, H, placements)
+    # placements = FFDH(rectangles, W, H)
+    # dessiner_interface(W, H, placements)
+    # placements = BFDH(rectangles, W, H)
+    # dessiner_interface(W, H, placements)
