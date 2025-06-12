@@ -1,0 +1,9 @@
+Rect 1 : 9 , 9
+Rect 2 : 8 , 8
+Rect 3 : 7 , 7
+Rect 4 : 1 , 6
+Rect 5 : 1 , 5
+Rect 6 : 2 , 4
+Rect 7 : 8 , 3
+Rect 8 : 2 , 2
+Rect 9 : 2 , 1
