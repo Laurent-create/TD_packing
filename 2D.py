@@ -142,12 +142,12 @@ def brute_force_packing_2d(rectangles, W, H):
     placer(0, [], [])
     return meilleur["placements"]
 
-def dessiner_interface(W, H, placements, scale=15, padding=10):
+def dessiner_interface(W, H, placements, scale_x=40, scale_y=15, padding=10):
     fenetre = tk.Tk()
     fenetre.title("Placement NFDH - Grille 2D")
 
-    canvas_width = W * scale + padding * 2
-    canvas_height = H * scale + padding * 2
+    canvas_width = W * scale_x + padding * 2
+    canvas_height = H * scale_y + padding * 2
 
     canvas = tk.Canvas(fenetre, width=canvas_width, height=canvas_height, bg="white")
     canvas.pack(pady=10)
@@ -155,7 +155,7 @@ def dessiner_interface(W, H, placements, scale=15, padding=10):
     # Grand rectangle avec bordure
     canvas.create_rectangle(
         padding, padding, 
-        W * scale + padding, H * scale + padding,
+        W * scale_x + padding, H * scale_y + padding,
         outline="black", width=2
     )
 
@@ -164,10 +164,10 @@ def dessiner_interface(W, H, placements, scale=15, padding=10):
         w, h = rect["dimension"]
         rect_id = rect["id"]
 
-        x1 = padding + x * scale
-        y1 = padding + y * scale
-        x2 = padding + (x + w) * scale
-        y2 = padding + (y + h) * scale
+        x1 = padding + x * scale_x
+        y1 = padding + y * scale_y
+        x2 = padding + (x + w) * scale_x
+        y2 = padding + (y + h) * scale_y
 
         canvas.create_rectangle(x1, y1, x2, y2, fill="skyblue", outline="black")
         canvas.create_text((x1 + x2) // 2, (y1 + y2) // 2, text=str(rect_id), font=("Arial", 14, "bold"))
