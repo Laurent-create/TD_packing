@@ -188,10 +188,18 @@ def dessiner_interface(W, H, placements, scale_x=40, scale_y=15, padding=10):
 # Exemple d’utilisation
 if __name__ == "__main__":
     W, H = 10, 30
-    rectangles = [(9,9),(8,8),(7,7),(1,6),(1,5),(2,4),(8,3),(2,2),(2,1)]
+    rectangles = [(6,9),(8,9),(2,8),(5,8),(3,5),(5,5),(4,3),(4,3),(3,1)]
+
     placements = brute_force_packing_2d(rectangles, W, H)
     dessiner_interface(W, H, placements)
-    # placements = FFDH(rectangles, W, H)
-    # dessiner_interface(W, H, placements)
-    # placements = BFDH(rectangles, W, H)
-    # dessiner_interface(W, H, placements)
+
+    placements = FFDH(rectangles, W, H)
+    dessiner_interface(W, H, placements)
+
+    placements = BFDH(rectangles, W, H)
+    dessiner_interface(W, H, placements)
+
+    placements = NFDH(rectangles, W, H)
+    dessiner_interface(W, H, placements)
+
+    # Zah maka an lisany dem
